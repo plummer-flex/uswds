@@ -5,6 +5,7 @@ const navigation = require("./navigation");
 const password = require("./password");
 const search = require("./search");
 const skipnav = require("./skipnav");
+const tooltips = require("./tooltips");
 const validator = require("./validator");
 
 module.exports = {
@@ -15,5 +16,6 @@ module.exports = {
   password,
   search,
   skipnav,
+  tooltips,
   validator
 };
