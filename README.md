@@ -2,7 +2,6 @@
 
 [![CircleCI Build Status](https://img.shields.io/circleci/build/gh/uswds/uswds/develop?style=for-the-badge&logo=circleci)](https://circleci.com/gh/uswds/uswds/tree/develop) ![Snyk vulnerabilities](https://img.shields.io/snyk/vulnerabilities/npm/uswds?style=for-the-badge) [![npm Version](https://img.shields.io/npm/v/uswds?style=for-the-badge)](https://www.npmjs.com/package/uswds) [![npm Downloads](https://img.shields.io/npm/dt/uswds?style=for-the-badge)](https://www.npmjs.com/package/uswds) [![GitHub issues](https://img.shields.io/github/issues/uswds/uswds?style=for-the-badge&logo=github)](https://github.com/uswds/uswds/issues) [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4?style=for-the-badge)](https://github.com/prettier/prettier)
 
-
 The [United States Web Design System](https://designsystem.digital.gov) includes a library of open source UI components and a visual style guide for U.S. federal government websites.
 
 This repository is for the design system code itself. We maintain [another repository for the documentation and website](https://github.com/uswds/uswds-site). To see the design system and its documentation on the web, visit [https://designsystem.digital.gov](https://designsystem.digital.gov).
@@ -61,14 +60,14 @@ How you implement the design system depends on the needs of your project and you
 
 - **[Use the design system `npm` package](#install-using-npm)** if you are familiar with using `npm` and package management.
 
-### Download
+### Download and install
 
-1. Download the [USWDS zip file](https://github.com/uswds/uswds/releases/download/v2.6.0/uswds-2.6.0.zip) from the latest USWDS release and open that file.
+1. Download the [USWDS zip file](https://github.com/uswds/uswds/releases/download/v2.10.0/uswds-2.10.0.zip) from the latest USWDS release and open that file.
 
    After extracting the zip file you should see the following file and folder structure:
 
    ```
-   uswds-2.6.0/
+   uswds-2.10.0/
    ├── css/
    │   ├── uswds.min.css.map
    │   ├── uswds.min.css
@@ -76,6 +75,9 @@ How you implement the design system depends on the needs of your project and you
    ├── fonts/
    ├── img/
    ├── js/
+   │   ├── uswds-init.js
+   │   ├── uswds-init.min.js
+   │   ├── uswds-init.min.js.map
    │   ├── uswds.min.js.map
    │   ├── uswds.min.js
    │   └── uswds.js
@@ -83,12 +85,20 @@ How you implement the design system depends on the needs of your project and you
 
    ```
 
+   The three files critical to any USWDS project are the **stylesheet**, the **library**, and the **intializer**. Any project requires both the stylesheet and library to function properly.
+
+   **Stylesheet:** This is the compiled CSS stylesheet that describes how design system components look. Reference either `uswds.css` or `uswds.min.css` in the `<head>` of your document.
+
+   **Library:** This is the compiled JavaScript that controls component interactivity. Reference either `uswds.js` or `uswds.min.js` at the end of the `<body>` of your document.
+
+   **Initializer:** This small JavaScript file (less than 1 KB minified) helps the browser know if the USWDS JavaScript library is loading properly. This prevents component content from "flashing" or "shifting" while the page loads. Reference `uswds-init.min.js` in the `<head>` of your page, or inline its contents directly into the `<script>` tag.
+
 2. Copy these files and folders into a relevant place in your project's code base. Here is an example structure for how this might look:
 
    ```
    example-project/
    ├── assets/
-   │   ├── uswds-2.6.0/
+   │   ├── uswds-2.10.0/
    │   ├── stylesheets/
    │   ├── images/
    │   └── javascript/
@@ -97,7 +107,7 @@ How you implement the design system depends on the needs of your project and you
 
    You'll notice in our example above that we also outline a `stylesheets`, `images` and `javascript` folder in your `assets` folder. These folders are to help organize any assets that are unique to your project and separate from the design system assets.
 
-3. Reference the CSS and JavaScript files in each HTML page or dynamic templates in your project. We also provide Sass (.scss) files in the zip package which you can use to generate new CSS with project-specific settings. See [Sass and theme settings](#sass-and-theme-settings) for more information.
+3. Reference the stylesheet, library, and initializer in each HTML page or dynamic template in your project. We also provide Sass (.scss) files in the zip package which you should use to generate new CSS with project-specific settings. See [Sass and theme settings](#sass-and-theme-settings) for more information.
 
    Here is an example of how to reference these assets in your `index.html` file:
 
@@ -108,10 +118,11 @@ How you implement the design system depends on the needs of your project and you
        <meta charset="utf-8" />
        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
        <title>My Example Project</title>
-       <link rel="stylesheet" href="assets/uswds-2.6.0/css/uswds.min.css" />
+       <script src="assets/uswds-2.10.0/js/uswds-init.min.js"></script>
+       <link rel="stylesheet" href="assets/uswds-2.10.0/css/uswds.min.css" />
      </head>
      <body>
-       <script src="assets/uswds-2.6.0/js/uswds.min.js"></script>
+       <script src="assets/uswds-2.10.0/js/uswds.min.js"></script>
      </body>
    </html>
    ```
@@ -217,10 +228,13 @@ scss
 
 The design system requires **autoprefixing** to work properly. This is included in the [`uswds-gulp`](https://github.com/uswds/uswds-gulp) package.
 
-**Autoprefixing** uses a service like [gulp-autoprefixer](https://github.com/sindresorhus/gulp-autoprefixer) to automatically add vendor prefixes to the precompiled stylesheets. Don't add vendor prefixes to your custom styles manually — it is more reliable to use autoprefixing. We use the following autoprefixer settings:
+**Autoprefixing** uses a service like [gulp-autoprefixer](https://github.com/sindresorhus/gulp-autoprefixer) to automatically add vendor prefixes to the precompiled stylesheets. Don't add vendor prefixes to your custom styles manually — it is more reliable to use autoprefixing. We use the following autoprefixer settings via `.browserslistrc` config:
 
 ```
-'> 2%','Last 2 versions', 'IE 11'
+> 2%
+last 2 versions
+IE 11
+not dead
 ```
 
 > Note: **media query sorting** is no longer required as of USWDS 2.5.0. We stopped sorting media queries with [csso](https://github.com/css/csso) in USWDS 2.5.1 because it wasn't outputting as expected. While both the minified and unminified CSS files are modestly larger as a result: `268 KB` unsorted vs. `259 KB` sorted, our testing indicates that once the files are compressed server side with gzip, the unsorted CSS is actually smaller: `36 KB` unsorted and gzipped vs. `38 KB` sorted and gzipped. As a result, we recommend that teams do not use media query sorting at this time.
@@ -257,13 +271,13 @@ If you’re interested in maintaining a package that helps us distribute USWDS, 
 
 **Unfortunately, customizing the JavaScript for the USWDS currently requires NodeJS and a module bundler like Browserify or Webpack. We apologize for this inconvenience, and are working to resolve it in a future release of the design system.**
 
-The JavaScript for the USWDS is separated into components in the same manner as the visual interface which is all initialized with event handlers when the DOM is ready. These components are accessible as CommonJS modules that can be required in other JavaScript files which then must be built for the browser. The components are currently not accessible in the global browser scope, but can be extended to be included by requiring `components` and setting it to a global scope:
+USWDS JavaScript is separated into components (just as with the CSS and HTML) and initialized with event handlers when the DOM is ready. These components are accessible as CommonJS modules that can be required in other JavaScript files, then built for the browser. The components are not accessible in the global browser scope, but can be extended to be included by requiring `components` and setting it to a global scope:
 
 ```js
 window.uswds = require("./components");
 ```
 
-Each component has a standardized interface that can be used to extend it further. The components store a HTML class name (e.g. `.usa-accordion__button[aria-controls]`) that's used to link HTML elements with the JS component, so when a component is initialized, it will search through the current HTML DOM finding all elements that match its class and inialize the component JavaScript for those elements. The primary methods each component has are as follows:
+Each component has a standardized interface that can be used to extend it further. The components store a HTML class (like `.usa-accordion__button[aria-controls]`) used to link HTML elements with the JavaScript component. When a component is initialized, it searches through the current HTML DOM to find all elements that match the class and initializes the component JavaScript for those elements. The primary methods for each component include:
 
 - `on`: Initialize a component's JavaScript behavior by passing the root element, such as `window.document`.
 - `off`: The opposite of `on`, de-initializes a component, removing any JavaScript event handlers on the component.
@@ -271,7 +285,58 @@ Each component has a standardized interface that can be used to extend it furthe
 - `show`: Shows a whole, hidden component.
 - `toggle`: Toggles the visibility of a component on and off based on the previous state.
 
-Some components have additional methods for manipulating specific aspects of them based on what they are and what they do. These can be found in the component's JS file.
+Some components have additional methods based on that component's functionality. Any additional methods are found in that component's JavaScript file.
+
+**If you’re using a modern framework like React or Angular you can import components and initialize them in your library's DOM ready lifecycle event.**
+
+Importing a modular component.
+
+```js
+import USWDS from "../node_modules/uswds/src/js/components";
+const { characterCount, accordion } = USWDS; // deconstruct your components here
+```
+
+React hooks example:
+
+```js
+function App() {
+  const ref = document.body;
+
+  useEffect(() => {
+    // initialize
+    characterCount.on(ref); // default ref is document.body, if you want to use default you do not have to pass arguments
+    accordion.on();
+
+    // remove event listeners when component un-mounts.
+    return () => {
+      characterCount.off();
+      accordion.off();
+    };
+  });
+}
+```
+
+Angular example:
+
+```js
+export class App implements OnInit {
+  constructor() {
+    this.ref = document.body; // default ref is document.body, if you want to use default you do not have to pass arguments
+  }
+
+  ngOnInit() {
+    // initialize
+    characterCount.on(this.ref);
+    accordion.on();
+  }
+
+  // remove event listeners when component un-mounts.
+  ngOnDestroy() {
+    characterCount.off();
+    accordion.off();
+  }
+}
+```
 
 ## Customization, theming, and tokens
 
@@ -384,7 +449,7 @@ Many of our Fractal view templates are compatible with [Nunjucks](https://mozill
 
 ## Long-term support of v1.x
 
-[Version 1.x](https://v1.designsystem.digital.gov) is in [maintenance mode](https://en.wikipedia.org/wiki/Maintenance_mode) and will be supporting critical bug fixes through January 2020.
+[Version 1.x](https://v1.designsystem.digital.gov) is in maintenance mode. We will only make critical updates like security patches.
 
 ## Need installation help?
 

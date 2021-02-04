@@ -2,3 +2,10 @@
 require("classlist-polyfill");
 // polyfills HTMLElement.prototype.hidden
 require("./element-hidden");
+// polyfills Number.isNaN()
+require("./number-is-nan");
+// polyfills CustomEvent
+require("./custom-event");
+// polyfills svg4everybody
+require("./svg4everybody");
+
